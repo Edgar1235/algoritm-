@@ -1,99 +1,96 @@
 import random
 
 
-# --- Допоміжні функції (з зображення) ---
-
-def generate_array(length: int, min_val: int, max_val: int) -> list:
-    """Генерує масив заданої довжини в діапазоні [min_val, max_val]"""
+# ==========================================
+# ПІДГОТОВКА: Допоміжний метод
+# ==========================================
+def generate_array(length: int, min_val: int, max_val: int) -> list[int]:
+    """Генерує список цілих випадкових чисел заданої довжини в заданому діапазоні."""
     return [random.randint(min_val, max_val) for _ in range(length)]
 
 
-def print_array(arr: list):
-    """Форматований вивід елементів масиву"""
-    formatted_elements = [f"[елемент_{i + 1}_значення_{val}]" for i, val in enumerate(arr)]
-    print(",\n".join(formatted_elements))
-    print()
+# ==========================================
+# ОСНОВНІ ЗАВДАННЯ
+# ==========================================
 
-
-# --- Методи завдань ---
-
-# 1. Порахувати кількість та суму парних елементів масиву в діапазоні
-def task1_count_and_sum_even_in_range(arr: list, min_val: int, max_val: int):
-    filtered = [x for x in arr if x % 2 == 0 and min_val <= x <= max_val]
-    count = len(filtered)
-    total_sum = sum(filtered)
-    print(f"[Завдання 1] У діапазоні [{min_val}, {max_val}] парних елементів: {count}, їх сума: {total_sum}")
+# 1. Кількість та сума парних елементів у заданому діапазоні індексів
+def count_and_sum_evens_in_range(arr: list[int], start_idx: int, end_idx: int) -> tuple[int, int]:
+    # Сріз масиву за заданими індексами включно з end_idx
+    sub_arr = arr[start_idx:end_idx + 1]
+    evens = [x for x in sub_arr if x % 2 == 0]
+    return len(evens), sum(evens)
 
 
 # 2. Середнє арифметичне та кількість елементів, більших за нього
-def task2_average_and_greater_count(arr: list):
+def avg_and_count_greater(arr: list[int]) -> tuple[float, int]:
     if not arr:
-        return
+        return 0.0, 0
     avg = sum(arr) / len(arr)
-    greater_count = sum(1 for x in arr if x > avg)
-    print(f"[Завдання 2] Середнє арифметичне: {avg:.2f}, кількість елементів > avg: {greater_count}")
+    count = sum(1 for x in arr if x > avg)
+    return avg, count
 
 
-# 3. Третій масив як попарна сума двох масивів однакової довжини
-def task3_pairwise_sum(arr1: list, arr2: list) -> list:
+# 3. Попарна сума двох масивів однакової довжини
+def pair_sum(arr1: list[int], arr2: list[int]) -> list[int]:
     return [a + b for a, b in zip(arr1, arr2)]
 
 
-# 4. Третій масив як конкатенація двох масивів різної довжини
-def task4_concat_arrays(arr1: list, arr2: list) -> list:
+# 4. Конкатенація двох масивів
+def concatenate_arrays(arr1: list[int], arr2: list[int]) -> list[int]:
     return arr1 + arr2
 
 
 # 5. Поміняти місцями максимум та мінімум
-def task5_swap_min_max(arr: list) -> list:
+def swap_max_min(arr: list[int]) -> list[int]:
     if not arr:
-        return arr
+        return []
     res = arr.copy()
-    min_idx = res.index(min(res))
-    max_idx = res.index(max(res))
+    min_val, max_val = min(res), max(res)
+
+    # Знаходимо перші входження елементів
+    min_idx, max_idx = res.index(min_val), res.index(max_val)
+
+    # Міняємо місцями
     res[min_idx], res[max_idx] = res[max_idx], res[min_idx]
     return res
 
 
-# 6. Поділити масив на два: з додатних та від’ємних елементів
-def task6_split_positive_negative(arr: list):
-    positive = [x for x in arr if x > 0]
-    negative = [x for x in arr if x < 0]
-    print("Додатні елементи:")
-    print_array(positive)
-    print("Від’ємні елементи:")
-    print_array(negative)
+# 6. Поділ на масиви додатних та від'ємних елементів
+def split_positive_negative(arr: list[int]) -> tuple[list[int], list[int]]:
+    positives = [x for x in arr if x > 0]
+    negatives = [x for x in arr if x < 0]
+    return positives, negatives
 
 
-# 7. Видалити дублікати максимума та мінімума
-def task7_remove_min_max_duplicates(arr: list) -> list:
+# 7. Видалення дублікатів максимума та мінімума (залишається по одному кожному)
+def remove_max_min_duplicates(arr: list[int]) -> list[int]:
     if not arr:
-        return arr
+        return []
+    min_val, max_val = min(arr), max(arr)
 
-    max_val = max(arr)
-    min_val = min(arr)
+    res = []
+    min_seen = False
+    max_seen = False
 
-    first_max_found = False
-    first_min_found = False
-    result = []
-
-    for item in arr:
-        if item == max_val:
-            if not first_max_found:
-                result.append(item)
-                first_max_found = True
-        elif item == min_val:
-            if not first_min_found:
-                result.append(item)
-                first_min_found = True
+    for x in arr:
+        if x == min_val:
+            if not min_seen:
+                res.append(x)
+                min_seen = True
+        elif x == max_val:
+            if not max_seen:
+                res.append(x)
+                max_seen = True
         else:
-            result.append(item)
+            res.append(x)
 
-    return result
+    return res
 
 
-# 8. Третій масив з елементів двох масивів в межах між значеннями їх середніх арифметичних
-def task8_elements_between_averages(arr1: list, arr2: list) -> list:
+# 8. Третій масив з елементів, розташованих між середніми арифметичними двох масивів
+def filter_between_averages(arr1: list[int], arr2: list[int]) -> list[int]:
+    if not arr1 or not arr2:
+        return []
     avg1 = sum(arr1) / len(arr1)
     avg2 = sum(arr2) / len(arr2)
 
@@ -104,36 +101,89 @@ def task8_elements_between_averages(arr1: list, arr2: list) -> list:
     return [x for x in combined if lower_bound <= x <= upper_bound]
 
 
-# --- Демонстрація роботи ---
+# ==========================================
+# ДОДАТКОВЕ ЗАВДАННЯ: Симуляція інвентарю
+# ==========================================
+class Inventory:
+    def __init__(self, capacity: int = 10):
+        self.capacity = capacity
+        self.slots = ["Empty"] * capacity
+
+    def add_item(self, item_name: str) -> bool:
+        """Додає предмет у першу вільну комірку."""
+        for i in range(self.capacity):
+            if self.slots[i] == "Empty":
+                self.slots[i] = item_name
+                print(f"Додано '{item_name}' у слот {i}.")
+                return True
+        print(f"Інвентар повний! Неможливо додати '{item_name}'.")
+        return False
+
+    def remove_item(self, item_name: str) -> bool:
+        """Видаляє предмет за назвою."""
+        for i in range(self.capacity):
+            if self.slots[i] == item_name:
+                self.slots[i] = "Empty"
+                print(f"Видалено '{item_name}' зі слота {i}.")
+                return True
+        print(f"Предмет '{item_name}' не знайдено.")
+        return False
+
+    def compact(self):
+        """Ущільнює інвентар: предмет на початок, порожні в кінець."""
+        non_empty = [item for item in self.slots if item != "Empty"]
+        empty_count = self.capacity - len(non_empty)
+        self.slots = non_empty + ["Empty"] * empty_count
+        print("Інвентар ущільнено.")
+
+    def display(self):
+        print("Інвентар:", self.slots)
+
+
+# ==========================================
+# ДЕМОНСТРАЦІЯ РОБОТИ
+# ==========================================
 if __name__ == "__main__":
-    array1 = generate_array(10, -50, 50)
-    array2 = generate_array(10, -50, 50)
-    array3 = generate_array(5, -20, 20)
+    print("--- ДЕМОНСТРАЦІЯ ОСНОВНИХ ЗАВДАНЬ ---")
+    arr = generate_array(length=10, min_val=-10, max_val=10)
+    print(f"Згенерований масив: {arr}")
 
-    print("--- Початковий масив 1 ---")
-    print_array(array1)
+    # 1
+    cnt, total = count_and_sum_evens_in_range(arr, start_idx=2, end_idx=6)
+    print(f"1. Парні з 2 по 6 індекс: кількість={cnt}, сума={total}")
 
-    task1_count_and_sum_even_in_range(array1, -20, 20)
-    task2_average_and_greater_count(array1)
+    # 2
+    avg, count_gt = avg_and_count_greater(arr)
+    print(f"2. Середнє={avg:.2f}, більших за середнє={count_gt}")
 
-    print("\n--- Завдання 3: Попарна сума ---")
-    print_array(task3_pairwise_sum(array1, array2))
+    # 3 & 4
+    arr2 = generate_array(length=10, min_val=1, max_val=5)
+    print(f"3. Попарна сума з {arr2}: {pair_sum(arr, arr2)}")
+    print(f"4. Конкатенація: {concatenate_arrays(arr, arr2)}")
 
-    print("\n--- Завдання 4: Конкатенація ---")
-    print_array(task4_concat_arrays(array1, array3))
+    # 5
+    print(f"5. Заміна max/min місцями: {swap_max_min(arr)}")
 
-    print("\n--- Завдання 5: Обмін Min та Max ---")
-    print_array(task5_swap_min_max(array1))
+    # 6
+    pos, neg = split_positive_negative(arr)
+    print(f"6. Додатні: {pos}, Від'ємні: {neg}")
 
-    print("\n--- Завдання 6: Додатні та від'ємні ---")
-    task6_split_positive_negative(array1)
+    # 7
+    arr_dup = [1, 5, 1, 3, 5, 2]
+    print(f"7. Видалення дублікатів max/min з {arr_dup}: {remove_max_min_duplicates(arr_dup)}")
 
-    print("\n--- Завдання 7: Видалення дублікатів Min/Max ---")
-    test_duplicates = [5, 10, -3, 10, -3, 2, 10]
-    print("Тестовий масив:")
-    print_array(test_duplicates)
-    print("Після чистки:")
-    print_array(task7_remove_min_max_duplicates(test_duplicates))
+    # 8
+    print(f"8. Елементи між середніми: {filter_between_averages(arr, arr2)}")
 
-    print("\n--- Завдання 8: Елементи між середніми арифметичними ---")
-    print_array(task8_elements_between_averages(array1, array2))
+    print("\n--- ДЕМОНСТРАЦІЯ ІГРОВОГО ІНВЕНТАРЮ ---")
+    inv = Inventory(capacity=10)
+    inv.add_item("Меч")
+    inv.add_item("Зілля")
+    inv.add_item("Щит")
+    inv.display()
+
+    inv.remove_item("Зілля")
+    inv.display()
+
+    inv.compact()
+    inv.display()
