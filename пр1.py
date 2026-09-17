@@ -185,5 +185,6 @@ if __name__ == "__main__":
     inv.remove_item("Зілля")
     inv.display()
 
+
     inv.compact()
     inv.display()
